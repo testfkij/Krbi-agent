@@ -47,10 +47,10 @@ class Agent:
    for call in calls:
     try:
      spec=self.tools.registry.get(call.name); approved=allow_dangerous or self.settings.tool_allowed(call.name,spec.dangerous)
+     yield StreamEvent('tool_start',message=call.name,raw={'tool_call':call.id})
      if spec.dangerous and not approved: raise PermissionError(f"tool '{call.name}' is not approved; use /approve {call.name}")
      result=await self.tools.call(call,approved)
     except Exception as e: result={'error':str(e)}
     yield StreamEvent('tool_result',message=call.name,raw={'tool_call':call.id,'result':result})
     messages.append(ChatMessage('tool',json.dumps(result,default=str),name=call.name,tool_call_id=call.id))
-   params.pop('tools',None)
   yield StreamEvent('error',message=f'Agent stopped after {max_tool_rounds} tool rounds')

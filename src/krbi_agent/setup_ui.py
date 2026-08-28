@@ -36,6 +36,7 @@ class SelectList(ListView):
 
 
 class SearchPanel(Vertical):
+    BINDINGS = [Binding("escape", "close_panel", "Close", show=False)]
     DEFAULT_CSS = """
     SearchPanel { width: 1fr; height: 1fr; }
     SearchPanel .title { text-style: bold; color: $accent; height: auto; }
@@ -61,6 +62,9 @@ class SearchPanel(Vertical):
         yield SelectList(id=f"{self.id}_list", classes="list", callback_name=self.callback_name)
         with Horizontal(classes="actions"):
             yield Button("Cancel", id=f"{self.id}_cancel")
+
+    def action_close_panel(self) -> None:
+        self.app.close_setup_overlay()
 
     def on_mount(self) -> None:
         self.refresh_items()
@@ -116,7 +120,8 @@ class ModelPicker(SearchPanel):
         items = []
         for model in models:
             caps = ", ".join(sorted(model.capabilities))
-            label = f"{model.id}  ·  {caps}" if caps else model.id
+            free = "  ·  FREE" if model.id.lower() == "openrouter/free" or model.id.lower().endswith(":free") else ""
+            label = f"{model.id}{free}  ·  {caps}" if caps else f"{model.id}{free}"
             items.append((label, model.id))
         self.set_items(items)
 

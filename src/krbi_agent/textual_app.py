@@ -102,6 +102,9 @@ class KRBIApp(App):
             with Horizontal(id="settings_modes"):
                 for mode in APPROVAL_MODES:
                     yield Button(mode, id=f"approval_{mode}", classes="settings_btn")
+            yield Static("Banner", id="banner_label")
+            yield Input(self.settings.banner_text, placeholder="Custom banner…", id="banner_input")
+            yield Button("Save banner", id="banner_save", classes="settings_btn")
             yield Static("Dangerous tools — toggle approval", id="tools_label")
             with VerticalScroll(id="settings_tools"):
                 for spec in default_tools().list():
@@ -312,6 +315,12 @@ class KRBIApp(App):
             save_settings(self.settings)
             self._refresh_settings()
             self._status()
+        elif ident == "banner_save":
+            value = self.query_one("#banner_input", Input).value.strip()[:120] or "KRBI // AGENT"
+            self.settings.banner_text = value
+            save_settings(self.settings)
+            self.query_one("#brand_banner", Static).update(value)
+            self.notify("Banner saved")
         elif ident.startswith("tool_"):
             name = ident.removeprefix("tool_")
             if name in self.settings.approved_tools:
@@ -454,6 +463,8 @@ class KRBIApp(App):
                         view.write("".join(pending), scroll_end=True)
                         pending.clear()
                         last_flush = now
+                elif event.type == "tool_start":
+                    self.notify(f"Running tool: {event.message}", timeout=2)
                 elif event.type == "tool_result":
                     # Tool internals never enter the conversation transcript.
                     self.notify(f"Tool completed: {event.message}", timeout=2)

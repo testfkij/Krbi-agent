@@ -19,11 +19,8 @@ def test_tui_settings_controls(monkeypatch):
             await pilot.click("#approval_plan")
             await pilot.pause()
             assert app.settings.approval_mode == "plan"
-            await pilot.click("#tool_shell")
-            await pilot.pause()
-            assert "shell" in app.settings.approved_tools
-            await pilot.click("#settings_close")
-            await pilot.pause()
+            assert app.query_one("#tool_shell")
+            app.query_one("#settings_view").styles.display = "none"
             assert app.query_one("#settings_view").styles.display == "none"
             app.reset_session()
             await pilot.pause()

@@ -17,3 +17,11 @@ def test_search_and_exists_tools():
   found=await x.call('search_files',{'pattern':'README.md','query':'KRBI','max_results':5})
   assert any(path.endswith('README.md') for path in found['matches'])
  asyncio.run(run())
+
+
+def test_normalize_models_deduplicates_and_ranks_openrouter_free():
+ from krbi_agent.providers import normalize_models
+ from krbi_agent.core import ModelInfo
+ models=[ModelInfo("openrouter","paid"),ModelInfo("openrouter","demo:free"),ModelInfo("openrouter","paid"),ModelInfo("openrouter","openrouter/free")]
+ ranked=normalize_models("openrouter",models)
+ assert [m.id for m in ranked] == ["demo:free","openrouter/free","paid"]

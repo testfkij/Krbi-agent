@@ -22,7 +22,7 @@ class OpenAICompatibleProvider(BaseHTTPProvider):
  async def list_models(self):
   if self.config.models and not self._api_key() and self.name != 'ollama': return [ModelInfo(self.name,m,m,capabilities={'chat','streaming','tools'}) for m in self.config.models]
   async with httpx.AsyncClient(timeout=self.timeout) as c:r=await c.get(self.config.model_url or f"{self.config.base_url.rstrip('/')}/models",headers=self._headers());r.raise_for_status();d=r.json()
-  return [ModelInfo(self.name,x['id'],x.get('id'),capabilities={'chat','streaming','tools'}) for x in d.get('data',[]) if x.get('id')]
+  return normalize_models(self.name,[ModelInfo(self.name,x.get('id'),x.get('id'),capabilities={'chat','streaming','tools'}) for x in d.get('data',[]) if isinstance(x,dict) and x.get('id')])
  async def stream_chat(self,messages,model,**kwargs):
   def wire(m):
    x={'role':m.role,'content':m.content}
@@ -51,7 +51,7 @@ class AnthropicProvider(BaseHTTPProvider):
  async def list_models(self):
   if self.config.models and not self._api_key() and self.name != 'ollama': return [ModelInfo(self.name,m,m,capabilities={'chat','streaming','tools'}) for m in self.config.models]
   async with httpx.AsyncClient(timeout=self.timeout) as c:r=await c.get(f"{self.config.base_url.rstrip('/')}/models",headers=self._headers());r.raise_for_status();d=r.json()
-  return [ModelInfo(self.name,x['id'],x.get('display_name') or x['id'],capabilities={'chat','streaming','tools'}) for x in d.get('data',[]) if x.get('id')]
+  return normalize_models(self.name,[ModelInfo(self.name,x.get('id'),x.get('display_name') or x.get('id'),capabilities={'chat','streaming','tools'}) for x in d.get('data',[]) if isinstance(x,dict) and x.get('id')])
  async def stream_chat(self,messages,model,**kwargs):
   systems=[m.content for m in messages if m.role=='system'];items=[]
   for m in messages:
@@ -78,7 +78,7 @@ class GeminiNativeProvider(BaseHTTPProvider):
  async def list_models(self):
   if self.config.models and not self._api_key(): return [ModelInfo(self.name,m,m,capabilities={'chat','streaming','tools'}) for m in self.config.models]
   async with httpx.AsyncClient(timeout=self.timeout) as c:r=await c.get(f"{self.config.base_url.rstrip('/')}/models?key={self._api_key() or ''}");r.raise_for_status();d=r.json()
-  return [ModelInfo(self.name,x['name'].split('models/')[-1],x.get('displayName'),capabilities={'chat','streaming','tools'}) for x in d.get('models',[]) if 'generateContent' in x.get('supportedGenerationMethods',[])]
+  return normalize_models(self.name,[ModelInfo(self.name,x.get('name','').split('models/')[-1],x.get('displayName'),capabilities={'chat','streaming','tools'}) for x in d.get('models',[]) if isinstance(x,dict) and 'generateContent' in x.get('supportedGenerationMethods',[]) and x.get('name')])
  async def stream_chat(self,messages,model,**kwargs):
   sys=[m.content for m in messages if m.role=='system'];contents=[]
   for m in messages:
@@ -132,6 +132,20 @@ class AzureOpenAIProvider(OpenAICompatibleProvider):
       d=ch[0].get('delta') or {}
       if d.get('content'):yield StreamEvent('delta',delta=d['content'],raw=o)
       if d.get('tool_calls'):yield StreamEvent('tool_call_delta',tool_calls=d['tool_calls'],raw=o)
+
+def normalize_models(provider: str, models: list[ModelInfo]) -> list[ModelInfo]:
+ seen=set(); out=[]
+ for model in models:
+  model_id=str(getattr(model,'id','') or '').strip()
+  if not model_id or model_id in seen:
+   continue
+  seen.add(model_id)
+  out.append(model)
+ if provider == "openrouter" and "openrouter/free" not in seen:
+  out.insert(0, ModelInfo("openrouter", "openrouter/free", "Free Models Router", capabilities={"chat", "streaming", "tools"}))
+ out.sort(key=lambda m:(not (provider == 'openrouter' and (m.id.lower() == 'openrouter/free' or m.id.lower().endswith(':free'))), m.id.lower()))
+ return out
+
 class ProviderRegistry:
  def __init__(self,configs=None):self.configs={**PROVIDER_DEFAULTS,**(configs or {})}
  def names(self):return list(self.configs)
