@@ -441,7 +441,7 @@ class KRBIApp(App):
         self._hide_palette()
         view = self.query_one("#conversation", RichLog)
         view.write(f"\n[bold cyan]you ›[/] {text}")
-        view.write("[bold green]krbi ›[/] ", end="")
+        view.write("[bold green]krbi ›[/] ")
         pending: list[str] = []
         last_flush = time.monotonic()
         key = self.api_keys.get(self.provider)
@@ -451,7 +451,7 @@ class KRBIApp(App):
                     pending.append(event.delta)
                     now = time.monotonic()
                     if now - last_flush >= max(self.settings.stream_redraw_ms, 40) / 1000:
-                        view.write("".join(pending), end="", scroll_end=True)
+                        view.write("".join(pending), scroll_end=True)
                         pending.clear()
                         last_flush = now
                 elif event.type == "tool_result":
@@ -460,8 +460,8 @@ class KRBIApp(App):
                 elif event.type == "error":
                     view.write(f"[red]\n{event.message}[/]")
             if pending:
-                view.write("".join(pending), end="", scroll_end=True)
-            view.write("", end="\n", scroll_end=True)
+                view.write("".join(pending), scroll_end=True)
+            view.write("\n", scroll_end=True)
         finally:
             self.sending = False
             self._status()
