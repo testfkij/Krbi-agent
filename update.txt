@@ -1,0 +1,4 @@
+# KRBI Agent release/update marker
+VERSION=1.0.0
+VERSION_TYPE=A1
+CODE=23628

@@ -1,0 +1,62 @@
+name: Automatic GitHub Release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Test source checkout
+        run: |
+          python -m pip install httpx rich textual pytest
+          PYTHONPATH=src python -m compileall -q src tests
+          PYTHONPATH=src pytest -q
+
+      - name: Read locked release version
+        id: version
+        run: |
+          VERSION=$(grep '^VERSION=' update.txt | cut -d= -f2)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Create version tag when missing
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: v${{ steps.version.outputs.version }}
+        run: |
+          if ! git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then
+            git tag -a "$TAG" -m "KRBI Agent $TAG" "$GITHUB_SHA"
+            git push origin "$TAG"
+          else
+            echo "$TAG already exists; release creation will be idempotent."
+          fi
+
+      - name: Create GitHub Release automatically
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: v${{ steps.version.outputs.version }}
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "GitHub release $TAG already exists."
+            exit 0
+          fi
+          gh release create "$TAG" \
+            --target "$GITHUB_SHA" \
+            --title "KRBI Agent $TAG" \
+            --generate-notes
