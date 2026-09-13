@@ -1,8 +1,17 @@
 # KRBI Agent — Release Notes
 
-## 1.0.0 · A1 · 23628
+## 1.0.1 · A1 · 23629
 
-This is the current public release line.
+### Reliability and portability
+
+- Keep the MCP server version synchronized with the package release version.
+- Validate the source tree on Python 3.14 in CI in addition to the supported 3.11–3.13 matrix.
+- Keep the source-checkout workflow compatible with Termux/Android and other POSIX environments.
+- Add release smoke coverage for version reporting and MCP initialization.
+
+### 1.0.0 · A1 · 23628
+
+This was the previous public release line.
 
 ### Experience
 

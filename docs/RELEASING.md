@@ -1,6 +1,6 @@
 # Release KRBI Agent
 
-GitHub is the release source for KRBI Agent. The current release line is `1.0.0 · A1 · 23628`.
+GitHub is the release source for KRBI Agent. The current release line is `1.0.1 · A1 · 23629`.
 
 ## Verify the source
 
@@ -16,7 +16,7 @@ Commit the source changes and push `main` to GitHub. The release workflow reads 
 
 ```bash
 git add .
-git commit -m "Release KRBI Agent 1.0.0"
+git commit -m "Release KRBI Agent 1.0.1"
 git push origin main --follow-tags
 ```
 

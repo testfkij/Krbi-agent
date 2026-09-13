@@ -2,7 +2,7 @@
 
 KRBI Agent is a provider-neutral AI workspace for the terminal and browser. It connects to hosted APIs or local models, keeps the normal chat view clean, and gives tool use a controlled, visible workflow.
 
-**Current release:** 1.0.0 · A1 · 23628
+**Current release:** 1.0.1 · A1 · 23629
 
 ## Start
 

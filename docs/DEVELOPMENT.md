@@ -10,6 +10,8 @@ PYTHONPATH=src pytest -q
 PYTHONPATH=src python -m krbi_agent.cli --version
 ```
 
+The CI matrix covers Python 3.11–3.14. The source layout is intentionally dependency-light and works on POSIX systems, including Termux/Android, when Python and the runtime dependencies are installed.
+
 Keep generated caches out of the repository. Do not add credentials, chat history, temporary update data, or generated release files.
 
 ## UI behavior
@@ -18,4 +20,4 @@ The chat surface should stay conversation-first. Provider selection, API-key ent
 
 ## Versioning
 
-The current line is locked at `1.0.0 · A1 · 23628`. Update `update.txt` only when the release identity is intentionally changed.
+The current line is `1.0.1 · A1 · 23629`. Update `update.txt` only when the release identity is intentionally changed.
