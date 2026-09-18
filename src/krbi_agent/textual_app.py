@@ -136,7 +136,7 @@ class KRBIApp(App):
         status = TunnelManager().status()
         base = status.get("url") or f"http://127.0.0.1:{settings.tunnel_port}"
         info = connection_info(str(base), settings)
-        self.notify(f"MCP endpoint: {info["endpoint"]}\nBearer token: {info["authorization"]}", timeout=12)
+        self.notify(f"MCP endpoint: {info['endpoint']}\nBearer token: {info['authorization']}", timeout=12)
 
     def _status(self) -> None:
         self.query_one("#status", Static).update(

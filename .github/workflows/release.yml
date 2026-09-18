@@ -22,13 +22,13 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install project
-        run: python -m pip install -e .
+      - name: Install project and test dependencies
+        run: python -m pip install -e . pytest
 
       - name: Validate source
         run: |
           PYTHONPATH=src python -m compileall -q src tests
-          PYTHONPATH=src pytest -q tests/test_agent.py tests/test_updater.py tests/test_queue.py tests/test_versions.py tests/test_mcp.py tests/test_mcp_http.py tests/test_tunnel.py tests/test_provider_discovery.py tests/test_settings.py tests/test_tools.py tests/test_web_ui.py
+          PYTHONPATH=src pytest -q
 
       - name: Build commit-based source archive
         run: |

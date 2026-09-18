@@ -1,4 +1,4 @@
 # KRBI Agent release/update marker
-VERSION=1.3.0
+VERSION=1.3.1
 VERSION_TYPE=A3
-CODE=23631
+CODE=23632
