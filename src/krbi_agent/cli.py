@@ -45,6 +45,19 @@ async def do_models(registry: ProviderRegistry) -> None:
     console.print(table)
 
 
+def doctor() -> int:
+    from .doctor import run_checks
+    table = Table(title="KRBI Agent · Doctor")
+    table.add_column("Check")
+    table.add_column("Status")
+    table.add_column("Detail")
+    checks = run_checks()
+    for item in checks:
+        table.add_row(item.name, "OK" if item.ok else "WARN", item.detail)
+    console.print(table)
+    return 0 if all(item.ok for item in checks[:4]) else 1
+
+
 def show_versions() -> None:
     try:
         versions = available_versions()
@@ -226,7 +239,7 @@ def main() -> None:
     parser.add_argument("--banner", metavar="TEXT", help="Custom launch banner")
 
     subs = parser.add_subparsers(dest="cmd")
-    for name in ("providers", "models", "chat", "tui", "run", "config-example", "benchmark", "reset"):
+    for name in ("providers", "models", "chat", "tui", "run", "config-example", "benchmark", "reset", "doctor"):
         subs.add_parser(name)
 
     upd = subs.add_parser("update")
@@ -276,6 +289,8 @@ def main() -> None:
     if args.cmd is None:
         parser.print_help()
         return
+    if args.cmd == "doctor":
+        raise SystemExit(doctor())
     if args.cmd == "versions":
         show_versions(); return
     if args.cmd == "install-version":

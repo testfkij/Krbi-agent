@@ -15,6 +15,24 @@ def test_queue_priority_and_parallel_workers():
             assert sorted(results) == [2, 4, 6]
             assert q.qsize() == 0
             assert len(seen) == 3
+            stats = q.stats()
+            assert stats["submitted"] == 3
+            assert stats["completed"] == 3
         finally:
             await q.close()
+
+    asyncio.run(run())
+
+def test_queue_rejects_submit_after_close():
+    async def run():
+        async def worker(value):
+            return value
+        q = TaskQueue(worker)
+        await q.start()
+        await q.close()
+        try:
+            await q.submit("x")
+        except RuntimeError:
+            return
+        raise AssertionError("closed queue accepted work")
     asyncio.run(run())

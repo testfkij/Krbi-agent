@@ -2,132 +2,66 @@
 
 KRBI Agent is a provider-neutral AI workspace for the terminal, browser, local models, and remote MCP clients.
 
-**Current release:** 1.2.0 · A2 · 23630
+**Current release:** 1.3.0 · A3 · 23631
 
-## Platforms
+## Highlights
 
-The project is designed for Python 3.11+ on Linux and Windows, plus Android/Termux where Python, Rich, Textual, and the required provider tools are available. The CLI uses standard Python path/process APIs, and tunnel process handling adapts to Windows and POSIX systems.
+- Bounded asynchronous tool queue with priority, metrics, graceful shutdown, and cancellation.
+- Live model discovery across hosted and local providers.
+- Authenticated Streamable HTTP MCP with local dangerous-tool approval.
+- Configurable public tunnel adapters and persistent tunnel state.
+- Responsive browser UI and searchable Textual TUI.
+- Linux, Windows, and Android/Termux-oriented runtime support.
+- Commit-based historical versions that install beside the current release.
+- `krbi doctor` for environment and dependency diagnostics.
 
-## Start
+## Common commands
 
-Run directly from the source checkout:
+    krbi doctor
+    krbi providers
+    krbi models
+    krbi tui
+    krbi web --host 127.0.0.1 --port 8787
 
-```bash
-cd ~/krbi-agent
-PYTHONPATH=src python -m krbi_agent.cli --help
-```
+MCP:
 
-Or install the editable package on Linux/Windows:
+    krbi mcp serve --host 127.0.0.1 --port 8787
+    krbi mcp info --client codex
+    krbi mcp info --client claude
 
-```bash
-python -m pip install -e .
-krbi --help
-```
+Tunnels:
 
-Terminal chat:
+    krbi tunnel configure
+    krbi tunnel start
+    krbi tunnel status
+    krbi tunnel stop
 
-```bash
-krbi chat
-```
+Historical versions:
 
-Full-screen TUI:
+    krbi versions
+    krbi install-version 1.2.0
 
-```bash
-krbi tui
-```
+The active checkout is never replaced by an historical install. Each historical copy is downloaded from its recorded Git commit.
 
-Browser/mobile UI:
+## Provider/model handling
 
-```bash
-krbi web --host 127.0.0.1 --port 8787
-```
+KRBI asks supported providers for their current model catalog rather than relying only on a fixed list. Local adapters include Ollama, LM Studio, llama.cpp, and vLLM. Hosted adapters include OpenAI-compatible services, Anthropic, Google Gemini, Azure OpenAI, OpenRouter, Groq, Mistral, DeepSeek, Together, Fireworks, xAI, and Cohere.
 
-## Providers and models
+## MCP security
 
-KRBI discovers live provider model catalogs instead of depending on a fixed model list. Provider adapters include OpenAI-compatible services, Anthropic, Google Gemini, Azure OpenAI, OpenRouter, Groq, Mistral, DeepSeek, Together, Fireworks, xAI, Cohere, Ollama, LM Studio, llama.cpp, and vLLM.
+Remote MCP requests use a bearer token. Dangerous tool permissions are evaluated by local KRBI settings; a remote caller cannot turn on shell/write access by passing a remote override flag.
 
-The TUI and browser model selectors support searching the live catalog. OpenRouter free models are surfaced first when returned by the provider.
+## Tunnel behavior
 
-## Tools and queue
+Supported tunnel adapters are Cloudflare Tunnel, LocalTunnel, ngrok, and Serveo/SSH when the relevant client is installed. The selected provider, optional subdomain, port, last URL, and process PID are stored under `~/.krbi`.
 
-Agent tool execution is bounded by an async priority queue with configurable worker limits. Read-only tools are available immediately; write/shell tools remain protected by the approval system.
+Cloudflare quick tunnels generate a provider URL automatically; a custom domain requires a configured managed tunnel. Other providers only honor custom subdomains/domains when the provider account and client support them.
 
-Tool failures are returned to the agent as structured errors so one failed call does not crash the whole run.
+## Development
 
-## MCP
+Run:
 
-KRBI exposes MCP over both stdio and authenticated Streamable HTTP at `/mcp`.
+    python -m compileall -q src tests
+    python -m pytest -q
 
-Start a local MCP server:
-
-```bash
-krbi mcp serve --host 127.0.0.1 --port 8787
-```
-
-Print the endpoint and bearer token:
-
-```bash
-krbi mcp info
-```
-
-The remote HTTP endpoint requires a bearer token, and remote requests cannot override dangerous-tool approval from the server side.
-
-The MCP transport supports the 2026-07-28 protocol plus 2025-11-25 legacy initialization. MCP's current official remote transport is Streamable HTTP; legacy HTTP+SSE is deprecated in the 2026-07-28 specification.
-
-ChatGPT custom MCP apps can use a remote MCP endpoint in supported workspaces. Codex and Claude clients can use Streamable HTTP with the endpoint and Authorization header.
-
-## Tunnel providers
-
-Choose and save a tunnel provider and optional subdomain:
-
-```bash
-krbi tunnel configure
-krbi tunnel start
-krbi tunnel status
-krbi tunnel stop
-```
-
-Supported adapters are Cloudflare Tunnel, LocalTunnel, ngrok, and Serveo/SSH when their client is installed. Provider credentials remain controlled by the provider's own CLI.
-
-For one-command MCP exposure:
-
-```bash
-krbi mcp serve --host 127.0.0.1 --port 8787 --tunnel-provider cloudflared
-```
-
-The selected provider, subdomain, port, and last URL are stored under `~/.krbi` for later reuse. The public URL is the MCP base; append `/mcp`.
-
-## Updates and historical versions
-
-KRBI updates the active Git checkout from `origin/main` without using package-registry fallback installers.
-
-```bash
-krbi update
-```
-
-Historical versions are **commit based**, not Git-tag based. The manifest in `versions.json` maps a version to an immutable Git commit. Install an older copy beside the current checkout:
-
-```bash
-krbi versions
-krbi install-version 1.0.1
-```
-
-The current checkout stays installed and unchanged; historical versions are placed under `~/.krbi/versions/<version>`.
-
-Skip an automatic update check for one launch:
-
-```bash
-krbi --no-update-check tui
-```
-
-## UI
-
-The browser UI is responsive for desktop, tablet, and narrow mobile widths and honors reduced-motion preferences. The Textual UI uses searchable provider/model panels, keyboard navigation, bounded streaming redraws, and compact tool status notifications.
-
-## Security
-
-API keys entered through the TUI or browser are session-scoped. MCP remote access is bearer-token protected. Dangerous tool permissions are enforced locally by KRBI settings.
-
-## License
-
-KRBI Agent is released under the MIT License with the original creator credit preserved in `NOTICE.md`.
+The CI matrix covers Python 3.11–3.14.

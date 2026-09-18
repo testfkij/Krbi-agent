@@ -115,6 +115,7 @@ class TunnelManager:
         self.url = None
         self._reader_thread = threading.Thread(target=self._read_output, daemon=True)
         self._reader_thread.start()
+        self.save(provider=self.provider, subdomain=self.subdomain, port=self.port, url=None, pid=self.process.pid)
         deadline = time.monotonic() + timeout
         while time.monotonic() < deadline:
             if self.url:
@@ -129,6 +130,7 @@ class TunnelManager:
                 output.append(self._lines.get_nowait())
             except queue.Empty:
                 break
+        self.stop()
         raise TunnelError(f"tunnel did not report a public URL. {' '.join(output)[-800:]}")
 
     def _read_output(self) -> None:
@@ -184,7 +186,7 @@ class TunnelManager:
             "running": running,
             "provider": provider,
             "subdomain": self.subdomain or stored.get("subdomain", ""),
-            "port": self.port or int(stored.get("port", "8787")),
+            "port": self.port if self.is_running else int(stored.get("port", self.port)),
             "url": self.url or stored.get("last_url", ""),
             "platform": platform.system(),
             "hint": PROVIDERS[provider].hint if provider in PROVIDERS else "",
