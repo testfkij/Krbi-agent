@@ -4,6 +4,7 @@ import asyncio
 import html
 import secrets
 import threading
+import json
 from dataclasses import dataclass, field
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
@@ -14,6 +15,8 @@ from .providers import ProviderRegistry
 from .settings import APPROVAL_MODES, Settings, load_settings, save_settings
 from .storage import Store
 from .tools import default_tools
+from .mcp_http import handle_mcp_request, ensure_mcp_token
+from .tunnel import TunnelManager, PROVIDERS
 
 
 @dataclass(slots=True)
@@ -30,6 +33,10 @@ REGISTRY = ProviderRegistry(load_configs())
 SETTINGS = load_settings()
 STORE = Store()
 AGENT = Agent(REGISTRY, STORE, settings=SETTINGS)
+TUNNEL = TunnelManager()
+if not SETTINGS.mcp_token:
+    ensure_mcp_token(SETTINGS)
+    save_settings(SETTINGS)
 SESSIONS: dict[str, WebSession] = {}
 SESSION_LOCK = threading.Lock()
 
@@ -52,10 +59,11 @@ header{padding:14px 16px;display:flex;align-items:center;gap:12px}.brand{font-si
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 </style></head>
 <body><main>
-<header><div><div class="brand" id="brand_banner">KRBI // AGENT <span class="badge">v1.0.0 · A1 · 23628</span></div><div class="sub">Provider-neutral AI workspace · session-only credentials · local models supported</div></div><div id="status" class="status">Ready</div></header>
+<header><div><div class="brand" id="brand_banner">KRBI // AGENT <span class="badge">v1.2.0 · A2 · 23630</span></div><div class="sub">Provider-neutral AI workspace · session-only credentials · local models supported</div></div><div id="status" class="status">Ready</div></header>
 <section class="panel" style="display:block"><div class="setup"><select id="provider" aria-label="Provider"></select><button id="connect" class="primary">Connect</button><select id="model" aria-label="Model"><option value="">Choose model</option></select><button id="settings">Settings</button></div></section>
 <section id="panel" class="panel"></section>
 <section id="connect_modal" class="modal" aria-hidden="true"><div class="modal_card"><div class="modal_title">CONNECT PROVIDER</div><div class="muted" style="margin-bottom:10px">The key stays in this browser session and is used only for provider requests.</div><select id="modal_provider" aria-label="Provider"></select><input id="modal_key" class="field" type="password" autocomplete="off" placeholder="API key"><div class="modal_actions"><button id="modal_cancel">Cancel</button><button id="modal_submit" class="primary">Load live models</button></div></div></section>
+<section class="panel" style="display:block;padding:10px 14px"><span class="badge">MCP</span> Streamable HTTP at <code>/mcp</code> · authenticated bearer token · <span class="muted">Use <code>krbi mcp info</code> to print the connection details.</span></section>
 <section class="panel" style="display:block;padding:10px 14px"><span class="badge ok">LOCAL</span> Ollama · LM Studio · llama.cpp · vLLM <span class="muted">— no API key required when the local server allows it</span></section>
 <section id="log" class="log"><div class="empty">Choose a provider, connect, select a model, then press Enter to send.</div></section><div id="tool_status" class="tool_status" aria-live="polite"></div>
 <div class="composer-wrap"><div id="commands" class="commands"></div><div class="composer"><input id="q" autocomplete="off" placeholder="MESSAGE — Enter sends · / for commands"></div></div>
@@ -113,6 +121,12 @@ class Handler(BaseHTTPRequestHandler):
             return self._send("ok", sid=sid)
         if path == "/providers":
             return self._send("\n".join(REGISTRY.names()), sid=sid)
+        if path == "/mcp-info":
+            scheme = "https" if self.headers.get("X-Forwarded-Proto", "").lower() == "https" else "http"
+            host = self.headers.get("Host", "127.0.0.1")
+            return self._send(json.dumps({"endpoint": f"{scheme}://{host}/mcp", "protocol": "2026-07-28", "auth": "Bearer token required"}), sid=sid)
+        if path == "/tunnel":
+            return self._send(json.dumps(TUNNEL.status()), sid=sid)
         if path == "/tools":
             lines = []
             for tool in default_tools().list():
@@ -169,6 +183,26 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self) -> None:
         path = urlparse(self.path).path
         sid, session = self._session()
+        if path == "/mcp":
+            auth = self.headers.get("Authorization", "")
+            expected = "Bearer " + SETTINGS.mcp_token
+            if not SETTINGS.mcp_token or not secrets.compare_digest(auth, expected):
+                return self._send(json.dumps({"jsonrpc":"2.0","id":None,"error":{"code":-32002,"message":"authentication required"}}), 401, "application/json; charset=utf-8", sid=sid)
+            length = int(self.headers.get("content-length", "0"))
+            try:
+                payload = json.loads(self.rfile.read(length).decode("utf-8", "replace"))
+            except (ValueError, UnicodeDecodeError) as exc:
+                return self._send(json.dumps({"jsonrpc":"2.0","id":None,"error":{"code":-32700,"message":f"invalid JSON: {exc}"}}), 400, "application/json; charset=utf-8", sid=sid)
+            status_code, extra_headers, result = handle_mcp_request(payload, SETTINGS, AGENT.tools)
+            body = json.dumps(result, default=str).encode("utf-8")
+            self.send_response(status_code)
+            self.send_header("content-type", "application/json; charset=utf-8")
+            self.send_header("content-length", str(len(body)))
+            self.send_header("cache-control", "no-store")
+            self.send_header("x-content-type-options", "nosniff")
+            for key, value in extra_headers.items(): self.send_header(key, value)
+            self.end_headers(); self.wfile.write(body)
+            return
         data = self._form()
         if path == "/connect":
             provider = data.get("provider", "")

@@ -12,12 +12,15 @@ from .providers import ProviderRegistry
 from .settings import APPROVAL_MODES, Settings, load_settings, save_settings
 from .storage import Store
 from .tools import default_tools
+from .tunnel import TunnelManager
+from .mcp_http import connection_info, ensure_mcp_token
+from .settings import save_settings
 from .setup_ui import ProviderPicker, ApiKeyPanel, ModelPicker
 
 
 class KRBIApp(App):
     TITLE = "KRBI Agent"
-    SUB_TITLE = "v1.0.0 · A1 · code 23628 · provider-neutral workspace"
+    SUB_TITLE = "v1.2.0 · A2 · code 23630 · provider-neutral workspace"
     CSS = """
     Screen { layout: vertical; background: $background; }
     #setup { height: auto; min-height: 7; padding: 1 2; border-bottom: solid $panel; }
@@ -85,6 +88,7 @@ class KRBIApp(App):
                 yield Static("no model", id="model_value")
             with Horizontal(id="setup_row2"):
                 yield Button("Connect", id="connect_btn")
+                yield Button("MCP", id="mcp_btn")
                 yield Button("Settings", id="settings_btn")
                 yield Button("Reset", id="reset_btn")
                 yield Static("Enter sends · Ctrl+K commands · Ctrl+S settings", id="status")
@@ -124,6 +128,15 @@ class KRBIApp(App):
             self._show_provider(self.provider)
         self._refresh_settings()
         self._status()
+
+    def _show_mcp_info(self) -> None:
+        settings = self.settings
+        ensure_mcp_token(settings)
+        save_settings(settings)
+        status = TunnelManager().status()
+        base = status.get("url") or f"http://127.0.0.1:{settings.tunnel_port}"
+        info = connection_info(str(base), settings)
+        self.notify(f"MCP endpoint: {info["endpoint"]}\nBearer token: {info["authorization"]}", timeout=12)
 
     def _status(self) -> None:
         self.query_one("#status", Static).update(
@@ -302,6 +315,8 @@ class KRBIApp(App):
             await self._discover_models()
         elif ident == "connect_btn":
             self.open_provider_screen()
+        elif ident == "mcp_btn":
+            self._show_mcp_info()
         elif ident == "settings_btn":
             self.open_settings()
         elif ident == "reset_btn":
@@ -371,8 +386,10 @@ class KRBIApp(App):
         elif action == "tools":
             self.notify("Tools: " + ", ".join(t.name for t in default_tools().list()), timeout=8)
         elif action == "mcp":
-            from .mcp import MCPServer
-            self.notify(f"MCP tools: {len(MCPServer().tools_list())}", timeout=5)
+            self._show_mcp_info()
+        elif action == "tunnel":
+            status = TunnelManager().status()
+            self.notify(f"Tunnel: {status['provider']} · {status['url'] or "not running"}", timeout=7)
         elif action == "goal":
             self.goal = arg.strip()
             self.notify(f"Goal: {self.goal or 'not set'}")

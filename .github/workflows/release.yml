@@ -1,4 +1,4 @@
-name: Automatic GitHub Release
+name: Source Release Validation
 
 on:
   push:
@@ -6,10 +6,10 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  release:
+  source-release:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -22,41 +22,24 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Test source checkout
-        run: |
-          python -m pip install httpx rich textual pytest
-          PYTHONPATH=src python -m compileall -q src tests
-          PYTHONPATH=src pytest -q
+      - name: Install project
+        run: python -m pip install -e .
 
-      - name: Read locked release version
-        id: version
+      - name: Validate source
+        run: |
+          PYTHONPATH=src python -m compileall -q src tests
+          PYTHONPATH=src pytest -q tests/test_agent.py tests/test_updater.py tests/test_queue.py tests/test_versions.py tests/test_mcp.py tests/test_mcp_http.py tests/test_tunnel.py tests/test_provider_discovery.py tests/test_settings.py tests/test_tools.py tests/test_web_ui.py
+
+      - name: Build commit-based source archive
         run: |
           VERSION=$(grep '^VERSION=' update.txt | cut -d= -f2)
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+          SHORT_SHA=$(git rev-parse --short=12 HEAD)
+          mkdir -p dist
+          git archive --format=zip --output="dist/krbi-agent-$VERSION-$SHORT_SHA.zip" HEAD
 
-      - name: Create version tag when missing
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TAG: v${{ steps.version.outputs.version }}
-        run: |
-          if ! git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then
-            git tag -a "$TAG" -m "KRBI Agent $TAG" "$GITHUB_SHA"
-            git push origin "$TAG"
-          else
-            echo "$TAG already exists; release creation will be idempotent."
-          fi
-
-      - name: Create GitHub Release automatically
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TAG: v${{ steps.version.outputs.version }}
-        run: |
-          if gh release view "$TAG" >/dev/null 2>&1; then
-            echo "GitHub release $TAG already exists."
-            exit 0
-          fi
-          gh release create "$TAG" \
-            --target "$GITHUB_SHA" \
-            --title "KRBI Agent $TAG" \
-            --generate-notes
+      - name: Upload source archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: krbi-agent-source
+          path: dist/*.zip
+          retention-days: 30

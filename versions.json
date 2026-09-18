@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "tagless": true,
+  "versions": [
+    {
+      "version": "1.0.1",
+      "version_type": "A1",
+      "code": 23629,
+      "commit": "65c0c2fc11b0eb617a047d32ad4202520ec2bc16"
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 from __future__ import annotations
+import asyncio
 import json
 from typing import AsyncIterator
 from .core import ChatMessage, StreamEvent, Usage, ToolCall
@@ -6,11 +7,17 @@ from .providers import ProviderRegistry
 from .storage import Store
 from .tools import ToolExecutor
 from .settings import Settings, load_settings
+from .queue import TaskQueue
+
 DEFAULT_SYSTEM='You are KRBI Agent, a capable general-purpose AI agent. Be accurate, useful, safe, and transparent about uncertainty.'
+
 class Agent:
- def __init__(self,registry=None,store=None,tools=None,settings:Settings|None=None):
+ def __init__(self,registry=None,store=None,tools=None,settings:Settings|None=None,tool_workers=4):
   self.registry=registry or ProviderRegistry(); self.store=store or Store(); self.settings=settings or load_settings(); self.tools=tools or ToolExecutor()
+  self.tool_workers=max(1,int(tool_workers))
+
  def _tool_defs(self): return self.tools.schemas()
+
  async def run(self,chat_id,provider,model,prompt,system_prompt=None,goal=None,allow_dangerous=False,api_key=None,max_tool_rounds=8,**params)->AsyncIterator[StreamEvent]:
   history=self.store.messages(chat_id); sys=system_prompt or DEFAULT_SYSTEM
   if goal: sys+=f'\n\nCurrent user goal:\n{goal}'
@@ -44,13 +51,21 @@ class Agent:
     calls.append(ToolCall(c['id'],c['name'] or 'unknown',args))
    assistant_call_docs=[{'id':c.id,'type':'function','function':{'name':c.name,'arguments':json.dumps(c.arguments)}} for c in calls]
    messages.append(ChatMessage('assistant',text,tool_calls=assistant_call_docs))
-   for call in calls:
+   async def execute(call:ToolCall):
     try:
      spec=self.tools.registry.get(call.name); approved=allow_dangerous or self.settings.tool_allowed(call.name,spec.dangerous)
-     yield StreamEvent('tool_start',message=call.name,raw={'tool_call':call.id})
      if spec.dangerous and not approved: raise PermissionError(f"tool '{call.name}' is not approved; use /approve {call.name}")
-     result=await self.tools.call(call,approved)
-    except Exception as e: result={'error':str(e)}
-    yield StreamEvent('tool_result',message=call.name,raw={'tool_call':call.id,'result':result})
-    messages.append(ChatMessage('tool',json.dumps(result,default=str),name=call.name,tool_call_id=call.id))
+     return await self.tools.call(call,approved)
+    except Exception as e:
+     return {'error':str(e)}
+   queue=TaskQueue(execute,max_workers=min(self.tool_workers,max(1,len(calls))),max_pending=max(4,len(calls)))
+   await queue.start()
+   try:
+    results=await asyncio.gather(*(queue.submit(c) for c in calls))
+    for call,result in zip(calls,results):
+     yield StreamEvent('tool_start',message=call.name,raw={'tool_call':call.id})
+     yield StreamEvent('tool_result',message=call.name,raw={'tool_call':call.id,'result':result})
+     messages.append(ChatMessage('tool',json.dumps(result,default=str),name=call.name,tool_call_id=call.id))
+   finally:
+    await queue.close()
   yield StreamEvent('error',message=f'Agent stopped after {max_tool_rounds} tool rounds')

@@ -1,10 +1,13 @@
 from __future__ import annotations
 
-import os
 import json
+import os
+import shutil
 import subprocess
 import sys
+import tempfile
 import time
+import zipfile
 from dataclasses import dataclass
 from pathlib import Path
 from urllib.request import Request, urlopen
@@ -12,7 +15,9 @@ from urllib.request import Request, urlopen
 from . import __version__
 
 GITHUB_RAW_UPDATE_URL = "https://raw.githubusercontent.com/testfkij/Krbi-agent/main/update.txt"
+GITHUB_RAW_VERSIONS_URL = "https://raw.githubusercontent.com/testfkij/Krbi-agent/main/versions.json"
 GITHUB_GIT_URL = "https://github.com/testfkij/Krbi-agent.git"
+GITHUB_ARCHIVE_URL = "https://codeload.github.com/testfkij/Krbi-agent/zip/{commit}"
 UPDATE_CACHE_TTL = 900
 
 
@@ -53,8 +58,14 @@ def parse_update_text(text: str) -> UpdateInfo:
     return UpdateInfo(version, version_type, int(code))
 
 
+def _get_json(url: str, timeout: float = 5.0):
+    request = Request(url, headers={"User-Agent": "KRBI-Agent-Updater/1.1"})
+    with urlopen(request, timeout=timeout) as response:
+        return json.loads(response.read().decode("utf-8"))
+
+
 def fetch_latest(url: str = GITHUB_RAW_UPDATE_URL, timeout: float = 4.0) -> UpdateInfo:
-    request = Request(url, headers={"User-Agent": "KRBI-Agent-Updater/1.0"})
+    request = Request(url, headers={"User-Agent": "KRBI-Agent-Updater/1.1"})
     with urlopen(request, timeout=timeout) as response:
         return parse_update_text(response.read().decode("utf-8"))
 
@@ -73,7 +84,7 @@ def check_for_update(timeout: float = 1.5, force: bool = False) -> tuple[UpdateI
     try:
         remote = fetch_latest(timeout=timeout)
         cache.parent.mkdir(parents=True, exist_ok=True)
-        cache.write_text(json.dumps({"checked_at": time.time(), "remote": {"version":remote.version,"version_type":remote.version_type,"code":remote.code}}))
+        cache.write_text(json.dumps({"checked_at": time.time(), "remote": {"version": remote.version, "version_type": remote.version_type, "code": remote.code}}))
         return local, remote
     except Exception:
         try:
@@ -84,15 +95,71 @@ def check_for_update(timeout: float = 1.5, force: bool = False) -> tuple[UpdateI
         return local, None
 
 
+def fetch_versions(timeout: float = 5.0) -> list[dict]:
+    data = _get_json(GITHUB_RAW_VERSIONS_URL, timeout)
+    versions = data.get("versions", [])
+    if not isinstance(versions, list):
+        raise UpdateError("invalid versions.json")
+    return [v for v in versions if isinstance(v, dict) and v.get("version") and v.get("commit")]
+
+
+def available_versions(timeout: float = 5.0) -> list[dict]:
+    versions = fetch_versions(timeout)
+    local = current_info()
+    current = {"version": local.version, "version_type": local.version_type, "code": local.code, "commit": None, "current": True}
+    if not any(v.get("version") == local.version for v in versions):
+        versions.insert(0, current)
+    for item in versions:
+        item.setdefault("current", item.get("version") == local.version)
+    return sorted(versions, key=lambda x: (x.get("code", -1), x.get("version", "")), reverse=True)
+
+
+def _version_root() -> Path:
+    root = Path(os.getenv("KRBI_VERSIONS_DIR", Path.home() / ".krbi" / "versions"))
+    root.mkdir(parents=True, exist_ok=True)
+    return root
+
+
+def install_version(version: str, timeout: float = 30.0) -> Path:
+    version = version.strip()
+    if not version or "/" in version or any(ch in version for ch in "\\"):
+        raise UpdateError("invalid version")
+    match = next((v for v in fetch_versions(timeout) if v.get("version") == version), None)
+    if not match:
+        raise UpdateError(f"version {version} is not listed in versions.json")
+    commit = str(match["commit"]).strip()
+    if len(commit) < 7 or any(c not in "0123456789abcdefABCDEF" for c in commit):
+        raise UpdateError("invalid version commit")
+    destination = _version_root() / version
+    marker = destination / "update.txt"
+    if marker.exists():
+        return destination
+    temp = Path(tempfile.mkdtemp(prefix=f".{version}-", dir=str(_version_root())))
+    archive = temp / "source.zip"
+    try:
+        request = Request(GITHUB_ARCHIVE_URL.format(commit=commit), headers={"User-Agent": "KRBI-Agent-Updater/1.1"})
+        with urlopen(request, timeout=timeout) as response, archive.open("wb") as out:
+            shutil.copyfileobj(response, out)
+        with zipfile.ZipFile(archive) as zf:
+            zf.extractall(temp / "extract")
+        roots = [p for p in (temp / "extract").iterdir() if p.is_dir()]
+        if len(roots) != 1:
+            raise UpdateError("unexpected GitHub archive layout")
+        if destination.exists():
+            shutil.rmtree(destination)
+        shutil.move(str(roots[0]), str(destination))
+        (destination / ".krbi-version-commit").write_text(commit + "\n", encoding="utf-8")
+        return destination
+    finally:
+        shutil.rmtree(temp, ignore_errors=True)
+
+
 def _git_root() -> Path | None:
     try:
         result = subprocess.run(
             ["git", "rev-parse", "--show-toplevel"],
             cwd=Path(__file__).resolve().parents[2],
-            capture_output=True,
-            text=True,
-            timeout=5,
-            check=True,
+            capture_output=True, text=True, timeout=5, check=True,
         )
     except (OSError, subprocess.SubprocessError):
         return None

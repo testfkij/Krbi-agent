@@ -3,9 +3,11 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
 import os
+import secrets
 
 SETTINGS_PATH = Path(os.getenv("KRBI_SETTINGS", Path.home() / ".krbi" / "settings.toml"))
 APPROVAL_MODES = ("default", "auto_edit", "plan", "yolo")
+
 
 @dataclass(slots=True)
 class Settings:
@@ -17,11 +19,21 @@ class Settings:
     default_provider: str | None = None
     default_model: str | None = None
     banner_text: str = "KRBI // AGENT"
+    mcp_token: str = ""
+    tunnel_provider: str = "cloudflared"
+    tunnel_subdomain: str = ""
+    tunnel_port: int = 8787
+    tunnel_url: str = ""
 
     def __post_init__(self) -> None:
         if self.approval_mode not in APPROVAL_MODES:
             self.approval_mode = "default"
         self.stream_redraw_ms = min(max(int(self.stream_redraw_ms), 10), 500)
+        self.tunnel_port = min(max(int(self.tunnel_port), 1), 65535)
+        self.mcp_token = str(self.mcp_token or "")
+        self.tunnel_provider = str(self.tunnel_provider or "cloudflared")
+        self.tunnel_subdomain = str(self.tunnel_subdomain or "")[:128]
+        self.tunnel_url = str(self.tunnel_url or "")[:500]
 
     @property
     def read_only(self) -> bool:
@@ -51,15 +63,28 @@ def load_settings(path: Path = SETTINGS_PATH) -> Settings:
         default_provider=data.get("default_provider"),
         default_model=data.get("default_model"),
         banner_text=str(data.get("banner_text", "KRBI // AGENT"))[:120] or "KRBI // AGENT",
+        mcp_token=str(data.get("mcp_token", "")),
+        tunnel_provider=str(data.get("tunnel_provider", "cloudflared")),
+        tunnel_subdomain=str(data.get("tunnel_subdomain", "")),
+        tunnel_port=int(data.get("tunnel_port", 8787)),
+        tunnel_url=str(data.get("tunnel_url", "")),
     )
+
+
+def ensure_mcp_token(settings: Settings) -> str:
+    if not settings.mcp_token:
+        settings.mcp_token = secrets.token_urlsafe(32)
+    return settings.mcp_token
 
 
 def save_settings(settings: Settings, path: Path = SETTINGS_PATH) -> None:
     settings.__post_init__()
     path.parent.mkdir(parents=True, exist_ok=True)
     approved = ", ".join('"' + x.replace('"', '\\"') + '"' for x in sorted(settings.approved_tools))
+
     def q(v: str) -> str:
         return '"' + v.replace('"', '\\"') + '"'
+
     lines = [
         "[krbi]",
         f"approval_mode = {q(settings.approval_mode)}",
@@ -67,6 +92,11 @@ def save_settings(settings: Settings, path: Path = SETTINGS_PATH) -> None:
         f"workspace = {q(settings.workspace)}",
         f"show_tool_events = {str(settings.show_tool_events).lower()}",
         f"stream_redraw_ms = {settings.stream_redraw_ms}",
+        f"mcp_token = {q(settings.mcp_token)}",
+        f"tunnel_provider = {q(settings.tunnel_provider)}",
+        f"tunnel_subdomain = {q(settings.tunnel_subdomain)}",
+        f"tunnel_port = {settings.tunnel_port}",
+        f"tunnel_url = {q(settings.tunnel_url)}",
     ]
     if settings.default_provider:
         lines.append(f"default_provider = {q(settings.default_provider)}")
