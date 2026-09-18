@@ -1,26 +1,28 @@
 # KRBI Agent — Release Notes
 
+## 1.3.2 · A3 · 23633
+
+### Compatibility fix
+- Remove a Python 3.11-incompatible nested f-string expression from the TUI tunnel status path.
+- Add an AST-based Python 3.11 grammar compatibility test for every package source module.
+- Keep CI and source-release validation on the complete pytest suite.
+
 ## 1.3.1 · A3 · 23632
 
-### Release fixes
-- Fix the TUI MCP connection-info f-string so the package compiles on Python 3.11+.
-- Fix the GitHub source-release workflow so pytest is installed before validation.
-- Keep the release manifest commit-based and tagless.
-- Retain the 1.3.0 runtime hardening and diagnostics improvements.
+Release fixes for TUI compilation and GitHub validation dependency installation.
 
 ## 1.3.0 · A3 · 23631
 
-### Stability
-- Add a runtime doctor command for Python, dependency, Git, provider, and tunnel-client checks.
-- Improve bounded queue metrics, shutdown behavior, cancellation handling, and worker lifecycle.
-- Persist tunnel process IDs so a later CLI invocation can inspect/stop an existing tunnel.
-- Clean up failed tunnel launches instead of leaving orphaned processes.
+Runtime diagnostics, queue metrics/lifecycle hardening, and persistent tunnel process state.
 
 ## 1.2.0 · A2 · 23630
-Previous release line for queue, MCP HTTP, tunnel adapters, responsive UI, and commit-based version installation.
+
+Queue, MCP HTTP, tunnel adapters, responsive UI, and commit-based version installation.
 
 ## 1.0.1 · A1 · 23629
+
 Previous release line.
 
 ## 1.0.0 · A1 · 23628
+
 Initial public release line.

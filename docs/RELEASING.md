@@ -1,30 +1,32 @@
 # Release KRBI Agent
 
-GitHub main is the release source for KRBI Agent. The current release line is 1.3.1 · A3 · 23632.
+GitHub main is the release source for KRBI Agent. The current release line is 1.3.2 · A3 · 23633.
 
-## Verify
+Verify:
 
     PYTHONPATH=src python -m compileall -q src tests
-    PYTHONPATH=src pytest -q tests/test_agent.py tests/test_updater.py tests/test_queue.py tests/test_versions.py tests/test_mcp.py tests/test_mcp_http.py tests/test_tunnel.py tests/test_provider_discovery.py tests/test_settings.py tests/test_tools.py tests/test_web_ui.py tests/test_doctor.py
+    PYTHONPATH=src python -m pytest -q
 
-GitHub CI runs the supported test matrix after every push.
+The test suite also parses package modules with Python 3.11 grammar to catch syntax accepted by newer Python versions.
 
-## Publish
+Publish:
 
-KRBI does not require Git tags for historical versions. update.txt defines the active release identity and versions.json maps each release to an immutable Git commit.
-
-For each release:
 1. Commit and push source.
-2. Record that exact source commit in versions.json.
+2. Record the exact source commit in versions.json.
 3. Commit and push the manifest.
-4. Verify both GitHub workflows complete successfully.
+4. Verify the CI matrix and Source Release Validation succeed.
 
-Historical installs use the recorded commit and remain beside the current checkout.
+KRBI does not require Git tags for historical versions. update.txt identifies the active release, while versions.json maps every release to an immutable Git commit.
 
-## Recovery
+Historical installs remain beside the active checkout:
 
-A local checkout can be refreshed with krbi --reinstall. Historical copies can be installed with krbi install-version <version> without replacing the current checkout.
+    krbi versions
+    krbi install-version <version>
 
-## Creator credit
+Recovery:
+
+    krbi --reinstall
+
+Creator credit:
 
 Keep the MIT License and NOTICE.md together so the original creator credit remains attached to the project.

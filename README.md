@@ -2,9 +2,9 @@
 
 KRBI Agent is a provider-neutral AI workspace for the terminal, browser, local models, and remote MCP clients.
 
-Current release: 1.3.1 · A3 · 23632
+Current release: 1.3.2 · A3 · 23633
 
-## Highlights
+Highlights:
 
 - Bounded asynchronous tool queue with priority, metrics, graceful shutdown, and cancellation.
 - Live model discovery across hosted and local providers.
@@ -14,8 +14,9 @@ Current release: 1.3.1 · A3 · 23632
 - Linux, Windows, and Android/Termux-oriented runtime support.
 - Commit-based historical versions that install beside the current release.
 - krbi doctor for environment and dependency diagnostics.
+- Python 3.11 grammar compatibility validation in tests.
 
-## Common commands
+Common commands:
 
     krbi doctor
     krbi providers
@@ -39,15 +40,11 @@ Tunnels:
 Historical versions:
 
     krbi versions
-    krbi install-version 1.3.0
+    krbi install-version 1.3.1
 
-The active checkout is never replaced by an historical install. Each historical copy is downloaded from its recorded Git commit.
+The active checkout is never replaced by an historical install. Historical source is downloaded from the exact commit recorded in versions.json.
 
-## Reliability
-
-Use krbi doctor before troubleshooting provider or tunnel setup. Optional tunnel-client warnings mean that provider executable is not installed; core KRBI checks remain separate.
-
-## Development
+Development:
 
     python -m compileall -q src tests
     python -m pytest -q

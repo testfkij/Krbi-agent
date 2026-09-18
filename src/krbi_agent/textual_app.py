@@ -389,7 +389,8 @@ class KRBIApp(App):
             self._show_mcp_info()
         elif action == "tunnel":
             status = TunnelManager().status()
-            self.notify(f"Tunnel: {status['provider']} · {status['url'] or "not running"}", timeout=7)
+            shown_url = status["url"] or "not running"
+            self.notify(f"Tunnel: {status['provider']} · {shown_url}", timeout=7)
         elif action == "goal":
             self.goal = arg.strip()
             self.notify(f"Goal: {self.goal or 'not set'}")
