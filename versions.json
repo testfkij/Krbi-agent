@@ -1,7 +1,14 @@
 {
   "schema": 1,
   "tagless": true,
+  "source": "https://github.com/testfkij/Krbi-agent",
   "versions": [
+    {
+      "version": "1.2.0",
+      "version_type": "A2",
+      "code": 23630,
+      "commit": "5e6aee7b46daa338ec8763e85e1f7adbb2dd2dee"
+    },
     {
       "version": "1.0.1",
       "version_type": "A1",
