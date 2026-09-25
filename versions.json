@@ -4,6 +4,12 @@
   "source": "https://github.com/testfkij/Krbi-agent",
   "versions": [
     {
+      "version": "1.3.3",
+      "version_type": "A3",
+      "code": 23634,
+      "commit": "5567fcbc48643831d87dcc9c2ac1cb79182763e5"
+    },
+    {
       "version": "1.3.2",
       "version_type": "A3",
       "code": 23633,
