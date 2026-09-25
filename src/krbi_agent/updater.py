@@ -39,7 +39,7 @@ def current_info() -> UpdateInfo:
             return parse_update_text(path.read_text(encoding="utf-8"))
         except Exception:
             pass
-    return UpdateInfo(__version__, "A1", 23628)
+    return UpdateInfo(__version__, "A3", 0)
 
 
 def parse_update_text(text: str) -> UpdateInfo:

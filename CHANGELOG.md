@@ -1,5 +1,41 @@
 # KRBI Agent — Release Notes
 
+## 1.3.3 · A3 · 23634
+
+### Reliability and safety update
+- Harden workspace file reads with bounded UTF-8 reads and explicit truncation metadata.
+- Bound recursive content searches by result count and per-file byte limits.
+- Normalize shell timeouts and return structured timeout results instead of leaking `TimeoutExpired`.
+- Synchronize package, TUI, web, and release metadata at 1.3.3 / A3 / 23634.
+- Keep dangerous tools approval-gated while improving tool result diagnostics.
+
+## 1.3.3 · A3 · 23634
+
+### Reliability and safety update
+- Harden workspace file reads with bounded UTF-8 reads and explicit truncation metadata.
+- Bound recursive content searches by result count and per-file byte limits.
+- Normalize shell timeouts and return structured timeout results instead of leaking `TimeoutExpired`.
+- Synchronize package, TUI, web, and release metadata at 1.3.3 / A3 / 23634.
+- Keep dangerous tools approval-gated while improving tool result diagnostics.
+
+## 1.3.3 · A3 · 23634
+
+### Reliability and safety update
+- Harden workspace file reads with bounded UTF-8 reads and explicit truncation metadata.
+- Bound recursive content searches by result count and per-file byte limits.
+- Normalize shell timeouts and return structured timeout results instead of leaking `TimeoutExpired`.
+- Synchronize package, TUI, web, and release metadata at 1.3.3 / A3 / 23634.
+- Keep dangerous tools approval-gated while improving tool result diagnostics.
+
+## 1.3.3 · A3 · 23634
+
+### Reliability and safety update
+- Harden workspace file reads with bounded UTF-8 reads and explicit truncation metadata.
+- Bound recursive content searches by result count and per-file byte limits.
+- Normalize shell timeouts and return structured timeout results instead of leaking `TimeoutExpired`.
+- Synchronize package, TUI, web, and release metadata at 1.3.3 / A3 / 23634.
+- Keep dangerous tools approval-gated while improving tool result diagnostics.
+
 ## 1.3.2 · A3 · 23633
 
 ### Compatibility fix

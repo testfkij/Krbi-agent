@@ -20,7 +20,7 @@ from .setup_ui import ProviderPicker, ApiKeyPanel, ModelPicker
 
 class KRBIApp(App):
     TITLE = "KRBI Agent"
-    SUB_TITLE = "v1.2.0 · A2 · code 23630 · provider-neutral workspace"
+    SUB_TITLE = "v1.3.3 · A3 · code 23634 · provider-neutral workspace"
     CSS = """
     Screen { layout: vertical; background: $background; }
     #setup { height: auto; min-height: 7; padding: 1 2; border-bottom: solid $panel; }

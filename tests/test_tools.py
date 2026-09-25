@@ -25,3 +25,21 @@ def test_normalize_models_deduplicates_and_ranks_openrouter_free():
  models=[ModelInfo("openrouter","paid"),ModelInfo("openrouter","demo:free"),ModelInfo("openrouter","paid"),ModelInfo("openrouter","openrouter/free")]
  ranked=normalize_models("openrouter",models)
  assert [m.id for m in ranked] == ["demo:free","openrouter/free","paid"]
+
+
+def test_read_file_is_bounded_and_reports_truncation():
+ async def run():
+  x=ToolExecutor()
+  result=await x.call("read_file", {"path":"README.md", "max_bytes":32})
+  assert result["bytes"] >= len(result["content"].encode("utf-8"))
+  assert result["truncated"] is True
+ asyncio.run(run())
+
+
+def test_shell_timeout_is_structured():
+ async def run():
+  x=ToolExecutor()
+  result=await x.call("shell", {"command":"sleep 2", "timeout":1}, allow_dangerous=True)
+  assert result["timed_out"] is True
+  assert result["timeout"] == 1
+ asyncio.run(run())

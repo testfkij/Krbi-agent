@@ -59,7 +59,7 @@ header{padding:14px 16px;display:flex;align-items:center;gap:12px}.brand{font-si
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 </style></head>
 <body><main>
-<header><div><div class="brand" id="brand_banner">KRBI // AGENT <span class="badge">v1.2.0 · A2 · 23630</span></div><div class="sub">Provider-neutral AI workspace · session-only credentials · local models supported</div></div><div id="status" class="status">Ready</div></header>
+<header><div><div class="brand" id="brand_banner">KRBI // AGENT <span class="badge">v1.3.3 · A3 · 23634</span></div><div class="sub">Provider-neutral AI workspace · session-only credentials · local models supported</div></div><div id="status" class="status">Ready</div></header>
 <section class="panel" style="display:block"><div class="setup"><select id="provider" aria-label="Provider"></select><button id="connect" class="primary">Connect</button><select id="model" aria-label="Model"><option value="">Choose model</option></select><button id="settings">Settings</button></div></section>
 <section id="panel" class="panel"></section>
 <section id="connect_modal" class="modal" aria-hidden="true"><div class="modal_card"><div class="modal_title">CONNECT PROVIDER</div><div class="muted" style="margin-bottom:10px">The key stays in this browser session and is used only for provider requests.</div><select id="modal_provider" aria-label="Provider"></select><input id="modal_key" class="field" type="password" autocomplete="off" placeholder="API key"><div class="modal_actions"><button id="modal_cancel">Cancel</button><button id="modal_submit" class="primary">Load live models</button></div></div></section>
