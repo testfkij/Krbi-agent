@@ -16,6 +16,9 @@ from .tunnel import TunnelManager
 from .mcp_http import connection_info, ensure_mcp_token
 from .settings import save_settings
 from .setup_ui import ProviderPicker, ApiKeyPanel, ModelPicker
+from .roles import ROLE_LABELS, assign_role, available_skills
+from .custom_tools import build_definition_from_prompt, save_definition
+from .custom_tools import register_custom_tools
 
 
 class KRBIApp(App):
@@ -76,6 +79,9 @@ class KRBIApp(App):
         self.goal = ""
         self.system = DEFAULT_SYSTEM
         self._buffer = ""
+        self.focus_task: str | None = None
+        self.role: str | None = None
+        self.last_prompt: str | None = None
 
     def compose(self) -> ComposeResult:
         yield Header()
@@ -139,9 +145,11 @@ class KRBIApp(App):
         self.notify(f"MCP endpoint: {info['endpoint']}\nBearer token: {info['authorization']}", timeout=12)
 
     def _status(self) -> None:
+        focus_state = " · FOCUS" if self.focus_task else ""
+        role_state = self.role or "auto-role"
         self.query_one("#status", Static).update(
             f"[bold]KRBI[/] · {self.provider or 'no provider'} / {self.model or 'no model'} · "
-            f"approval={self.settings.approval_mode} · {'working…' if self.sending else 'ready'}"
+            f"{role_state}{focus_state} · approval={self.settings.approval_mode} · {'working…' if self.sending else 'ready'}"
         )
         self.query_one("#provider_value", Static).update(self.provider or "not connected")
         self.query_one("#model_value", Static).update(self.model or "no model")
@@ -228,6 +236,12 @@ class KRBIApp(App):
     def _new_chat(self) -> None:
         if self.provider and self.model:
             self.chat_id = self.store.new_chat("KRBI chat", self.provider, self.model)
+
+    def action_quit(self) -> None:
+        if self.focus_task:
+            self.notify("Focus mode is active. Use /unfocus before quitting. Ctrl+C remains an emergency interrupt.", severity="warning", timeout=8)
+            return
+        self.exit()
 
     def action_close_setup(self) -> None:
         if self.query_one("#setup_overlay", Vertical).styles.display == "block":
@@ -377,7 +391,41 @@ class KRBIApp(App):
             self.notify(f"Unknown command: {name}", severity="warning")
             return
         action = matches[0].action
-        if action == "help":
+        if action == "focus":
+            objective = arg.strip() or self.goal or self.last_prompt
+            if not objective:
+                self.notify("Usage: /focus <task to finish>", severity="warning")
+            else:
+                self.focus_task = objective
+                self.notify("FOCUS ACTIVE — task stays active until completion. Use /unfocus to exit.", timeout=8)
+            self._status()
+        elif action == "unfocus":
+            self.focus_task = None
+            self.notify("Focus mode released")
+            self._status()
+        elif action == "role":
+            if arg.strip().lower() in {"", "auto"}:
+                self.role = None
+                self.notify("Specialist role: automatic task routing")
+            else:
+                value = arg.strip().lower().replace("_", "-").replace(" ", "-")
+                if value not in ROLE_LABELS:
+                    self.notify("Roles: " + ", ".join(ROLE_LABELS), severity="warning", timeout=8)
+                else:
+                    self.role = value
+                    self.notify("Assigned role: " + value)
+            self._status()
+        elif action == "skills":
+            skills = available_skills()
+            self.notify("Skills: " + (", ".join(item["name"] for item in skills) or "none found"), timeout=8)
+        elif action == "tool-build":
+            if not self.provider or not self.model:
+                self.notify("Connect a model before using /tool-build <tool idea>", severity="warning")
+            elif not arg.strip():
+                self.notify("Usage: /tool-build <describe a small tool>", severity="warning")
+            else:
+                self.run_worker(self._build_custom_tool(arg.strip()))
+        elif action == "help":
             self.notify(" ".join(c.name for c in COMMANDS), timeout=8)
         elif action == "providers":
             self.notify("\n".join(self.registry.names()), timeout=8)
@@ -439,16 +487,25 @@ class KRBIApp(App):
                 self._new_chat(); self._status()
                 self.notify(f"Model: {self.model}")
         elif action == "new":
-            self.new_chat()
+            if self.focus_task:
+                self.notify("Focus is active; finish the task or use /unfocus before starting another chat.", severity="warning")
+            else:
+                self.new_chat()
         elif action == "clear":
             self.clear_chat()
         elif action == "reset":
-            self.reset_session()
+            if self.focus_task:
+                self.notify("Focus is active; use /unfocus before resetting the session.", severity="warning")
+            else:
+                self.reset_session()
         elif action == "local":
             local = [name for name in self.registry.names() if name in {"ollama", "lm-studio", "llama-cpp", "vllm-local"}]
             self.notify("Local providers: " + (", ".join(local) or "none"), timeout=6)
         elif action == "quit":
-            self.exit()
+            if self.focus_task:
+                self.notify("Focus is active; use /unfocus before quitting. Ctrl+C remains an emergency interrupt.", severity="warning", timeout=8)
+            else:
+                self.exit()
         elif action == "tokens":
             self.notify("Token usage is written to the current Markdown session when the provider reports it.", timeout=6)
         elif action == "history":
@@ -457,12 +514,27 @@ class KRBIApp(App):
             if self.chat_id and self.store.chats():
                 self.notify(f"Session file: {self.store.chats()[-1].path}", timeout=6)
 
+    async def _build_custom_tool(self, request: str) -> None:
+        """Use the selected provider to generate a bounded declarative tool definition."""
+        if not self.provider or not self.model:
+            return
+        self.notify("Designing and validating a safe custom tool…", timeout=5)
+        try:
+            provider = self.registry.get(self.provider, api_key=self.api_keys.get(self.provider) or None)
+            definition = await build_definition_from_prompt(provider, self.model, request)
+            saved = save_definition(definition)
+            register_custom_tools(self.agent.tools.registry)
+            self.notify(f"Custom tool saved and registered: {saved['name']}", timeout=8)
+        except Exception as exc:
+            self.notify(f"Custom tool creation failed: {exc}", severity="error", timeout=10)
+
     async def _send_text(self, text: str) -> None:
         if not self.provider or not self.model:
             self.notify("Choose provider → enter API key → Load models → choose model", severity="warning")
             return
         if not self.chat_id:
             self._new_chat()
+        self.last_prompt = text
         self.sending = True
         self._status()
         self._hide_palette()
@@ -473,7 +545,7 @@ class KRBIApp(App):
         last_flush = time.monotonic()
         key = self.api_keys.get(self.provider)
         try:
-            async for event in self.agent.run(self.chat_id, self.provider, self.model, text, system_prompt=self.system, goal=self.goal, api_key=key):
+            async for event in self.agent.run(self.chat_id, self.provider, self.model, text, system_prompt=self.system, goal=self.goal, api_key=key, focus_task=self.focus_task, role=self.role):
                 if event.type == "delta":
                     pending.append(event.delta)
                     now = time.monotonic()

@@ -50,3 +50,8 @@ Development:
     python -m pytest -q
 
 The CI matrix covers Python 3.11–3.14.
+
+
+## Development status
+
+**Unreleased beta / work in progress.** The current branch includes experimental role/skill, custom-tool, focus-mode, and TSX frontend work. It is not a stable release; frontend integration and runtime tests are still pending.

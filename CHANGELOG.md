@@ -1,5 +1,15 @@
 # KRBI Agent — Release Notes
 
+## Unreleased · Beta
+
+Work in progress — not a stable release.
+- Add specialist role prompts and a `skills/` library for coding, backend/frontend development, web development, design, reviewing, error fixing, task assignment, and custom tools.
+- Add experimental custom-tool definition generation and provider configuration helpers.
+- Add a responsive React/TSX terminal-inspired frontend scaffold.
+- Improve focus-task behavior, chat rendering, and TUI interaction; validate further before tagging a release.
+- This beta is incomplete: frontend/backend integration and runtime tests remain for the next development session.
+
+
 ## 1.3.3 · A3 · 23634
 
 ### Reliability and safety update

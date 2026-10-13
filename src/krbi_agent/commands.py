@@ -1,7 +1,5 @@
 from __future__ import annotations
-
 from dataclasses import dataclass
-
 
 @dataclass(frozen=True, slots=True)
 class Command:
@@ -9,9 +7,13 @@ class Command:
     description: str
     action: str
 
-
 COMMANDS = [
     Command("/help", "Show commands", "help"),
+    Command("/focus", "Stay on a task until it is completed", "focus"),
+    Command("/unfocus", "Release focus mode", "unfocus"),
+    Command("/role", "Choose or show the active specialist role", "role"),
+    Command("/skills", "List loaded skill files", "skills"),
+    Command("/tool-build", "Ask the current model to design a safe custom tool", "tool-build"),
     Command("/goal", "Set or show the current agent goal", "goal"),
     Command("/system", "Set system prompt", "system"),
     Command("/provider", "Select a provider", "provider"),
@@ -34,10 +36,9 @@ COMMANDS = [
     Command("/history", "Show chat history", "history"),
     Command("/tokens", "Show token usage", "tokens"),
     Command("/export", "Export current chat", "export"),
-    Command("/quit", "Exit KRBI Agent", "quit"),
+    Command("/quit", "Exit KRBI Agent (unfocus first)", "quit"),
 ]
-
 
 def search_commands(q: str) -> list[Command]:
     q = q.lower().lstrip("/")
-    return [c for c in COMMANDS if q in c.name.lower() or q in c.description.lower()]
+    return [command for command in COMMANDS if q in command.name.lower() or q in command.description.lower()]

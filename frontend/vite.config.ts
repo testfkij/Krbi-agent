@@ -1,0 +1,3 @@
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+export default defineConfig({plugins:[react()],build:{outDir:"dist",emptyOutDir:true,sourcemap:false},server:{proxy:{"/providers":"http://127.0.0.1:8787","/connect":"http://127.0.0.1:8787","/chat":"http://127.0.0.1:8787","/session":"http://127.0.0.1:8787","/settings":"http://127.0.0.1:8787","/tools":"http://127.0.0.1:8787","/history":"http://127.0.0.1:8787","/export":"http://127.0.0.1:8787","/tunnel":"http://127.0.0.1:8787","/skills":"http://127.0.0.1:8787","/roles":"http://127.0.0.1:8787","/providers/add":"http://127.0.0.1:8787","/tools/build":"http://127.0.0.1:8787","/health":"http://127.0.0.1:8787","/mcp-info":"http://127.0.0.1:8787"}}});

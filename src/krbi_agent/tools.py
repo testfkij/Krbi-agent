@@ -67,6 +67,8 @@ def default_tools(root:Path|None=None):
   except subprocess.TimeoutExpired as e:
    return {"returncode":None,"stdout":(e.stdout or "")[-12000:],"stderr":(e.stderr or "")[-12000:],"timed_out":True,"timeout":timeout}
  r.register(ToolSpec("shell","Run a shell command in the workspace; requires explicit approval.",{"type":"object","properties":{"command":{"type":"string"},"timeout":{"type":"integer","minimum":1,"maximum":60}},"required":["command"]},shell,True))
+ from .custom_tools import register_custom_tools
+ register_custom_tools(r)
  return r
 class ToolExecutor:
  def __init__(self,registry=None,root=None):self.registry=registry or default_tools(root)
