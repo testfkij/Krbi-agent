@@ -248,6 +248,11 @@ def main() -> None:
     old = subs.add_parser("install-version", help="Download a historical commit-based version without replacing the current checkout")
     old.add_argument("version")
 
+    uninst = subs.add_parser("uninstall", help="Remove KRBI Agent service data and optionally the checked-out repository")
+    uninst.add_argument("--yes", action="store_true", help="Skip confirmation")
+    uninst.add_argument("--keep-data", action="store_true", help="Preserve ~/.krbi settings, chats, database, and custom tools")
+    uninst.add_argument("--remove-checkout", action="store_true", help="Also remove the current checkout if origin matches this project")
+
     tunnel = subs.add_parser("tunnel", help="Configure and control public tunnels")
     tunnel_sub = tunnel.add_subparsers(dest="tunnel_cmd")
     tstart = tunnel_sub.add_parser("start")
@@ -295,6 +300,9 @@ def main() -> None:
         show_versions(); return
     if args.cmd == "install-version":
         install_version_cmd(args.version); return
+    if args.cmd == "uninstall":
+        from .uninstall import uninstall
+        raise SystemExit(uninstall(yes=args.yes, keep_data=args.keep_data, remove_checkout=args.remove_checkout))
     if args.cmd == "tunnel":
         if args.tunnel_cmd == "start":
             tunnel_start(args.provider, args.subdomain, args.port)

@@ -290,3 +290,7 @@ def serve(host: str, port: int) -> None:
         pass
     finally:
         server.server_close()
+
+
+# Opt into TSX routes, specialist roles, focused tasks and custom tool creation.
+from . import web_extensions as _web_extensions  # noqa: E402,F401
