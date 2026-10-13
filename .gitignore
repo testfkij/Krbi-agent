@@ -9,3 +9,8 @@ build/
 .env
 .env.*
 .DS_Store
+
+frontend/node_modules/
+frontend/dist/
+frontend/tsc.log
+frontend/tsconfig.tsbuildinfo

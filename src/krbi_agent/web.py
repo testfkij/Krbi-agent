@@ -27,7 +27,8 @@ class WebSession:
     chat_id: str | None = None
     goal: str = ""
     system: str = DEFAULT_SYSTEM
-
+    focus_task: str = ""
+    role: str | None = None
 
 REGISTRY = ProviderRegistry(load_configs())
 SETTINGS = load_settings()

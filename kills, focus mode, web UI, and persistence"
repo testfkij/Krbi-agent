@@ -1,0 +1,212 @@
+frontend/node_modules/@types/babel__core/README.md:1: trailing whitespace.
+[32m+[m[32m# Installation[m[41m[m
+frontend/node_modules/@types/babel__core/README.md:2: trailing whitespace.
+[32m+[m[32m> `npm install --save @types/babel__core`[m[41m[m
+frontend/node_modules/@types/babel__core/README.md:3: trailing whitespace.
+[32m+[m[41m[m
+frontend/node_modules/@types/babel__core/README.md:4: trailing whitespace.
+[32m+[m[32m# Summary[m[41m[m
+frontend/node_modules/@types/babel__core/README.md:5: trailing whitespace.
+[32m+[m[32mThis package contains type definitions for @babel/core (https://github.com/babel/babel/tree/master/packages/babel-core).[m[41m[m
+frontend/node_modules/@types/babel__core/README.md:6: trailing whitespace.
+[32m+[m[41m[m
+frontend/node_modules/@types/babel__core/README.md:7: trailing whitespace.
+[32m+[m[32m# Details[m[41m[m
+frontend/node_modules/@types/babel__core/README.md:8: trailing whitespace.
+[32m+[m[32mFiles were exported from https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/babel__core.[m[41m[m
+frontend/node_modules/@types/babel__core/README.md:9: trailing whitespace.
+[32m+[m[41m[m
+frontend/node_modules/@types/babel__core/README.md:10: trailing whitespace.
+[32m+[m[32m### Additional Details[m[41m[m
+frontend/node_modules/@types/babel__core/README.md:11: trailing whitespace.
+[32m+[m[32m * Last updated: Mon, 20 Nov 2023 23:36:23 GMT[m[41m[m
+frontend/node_modules/@types/babel__core/README.md:12: trailing whitespace.
+[32m+[m[32m * Dependencies: [@babel/parser](https://npmjs.com/package/@babel/parser), [@babel/types](https://npmjs.com/package/@babel/types), [@types/babel__generator](https://npmjs.com/package/@types/babel__generator), [@types/babel__template](https://npmjs.com/package/@types/babel__template), [@types/babel__traverse](https://npmjs.com/package/@types/babel__traverse)[m[41m[m
+frontend/node_modules/@types/babel__core/README.md:13: trailing whitespace.
+[32m+[m[41m[m
+frontend/node_modules/@types/babel__core/README.md:14: trailing whitespace.
+[32m+[m[32m# Credits[m[41m[m
+frontend/node_modules/@types/babel__core/README.md:15: trailing whitespace.
+[32m+[m[32mThese definitions were written by [Troy Gerwien](https://github.com/yortus), [Marvin Hagemeister](https://github.com/marvinhagemeister), [Melvin Groenhoff](https://github.com/mgroenhoff), [Jessica Franco](https://github.com/Jessidhia), and [Ifiok Jr.](https://github.com/ifiokjr).[m[41m[m
+frontend/node_modules/@types/babel__generator/README.md:1: trailing whitespace.
+[32m+[m[32m# Installation[m[41m[m
+frontend/node_modules/@types/babel__generator/README.md:2: trailing whitespace.
+[32m+[m[32m> `npm install --save @types/babel__generator`[m[41m[m
+frontend/node_modules/@types/babel__generator/README.md:3: trailing whitespace.
+[32m+[m[41m[m
+frontend/node_modules/@types/babel__generator/README.md:4: trailing whitespace.
+[32m+[m[32m# Summary[m[41m[m
+frontend/node_modules/@types/babel__generator/README.md:5: trailing whitespace.
+[32m+[m[32mThis package contains type definitions for @babel/generator (https://github.com/babel/babel/tree/master/packages/babel-generator).[m[41m[m
+frontend/node_modules/@types/babel__generator/README.md:6: trailing whitespace.
+[32m+[m[41m[m
+frontend/node_modules/@types/babel__generator/README.md:7: trailing whitespace.
+[32m+[m[32m# Details[m[41m[m
+frontend/node_modules/@types/babel__generator/README.md:8: trailing whitespace.
+[32m+[m[32mFiles were exported from https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/babel__generator.[m[41m[m
+frontend/node_modules/@types/babel__generator/README.md:9: trailing whitespace.
+[32m+[m[41m[m
+frontend/node_modules/@types/babel__generator/README.md:10: trailing whitespace.
+[32m+[m[32m### Additional Details[m[41m[m
+frontend/node_modules/@types/babel__generator/README.md:11: trailing whitespace.
+[32m+[m[32m * Last updated: Thu, 03 Apr 2025 16:02:41 GMT[m[41m[m
+frontend/node_modules/@types/babel__generator/README.md:12: trailing whitespace.
+[32m+[m[32m * Dependencies: [@babel/types](https://npmjs.com/package/@babel/types)[m[41m[m
+frontend/node_modules/@types/babel__generator/README.md:13: trailing whitespace.
+[32m+[m[41m[m
+frontend/node_modules/@types/babel__generator/README.md:14: trailing whitespace.
+[32m+[m[32m# Credits[m[41m[m
+frontend/node_modules/@types/babel__generator/README.md:15: trailing whitespace.
+[32m+[m[32mThese definitions were written by [Troy Gerwien](https://github.com/yortus), [Melvin Groenhoff](https://github.com/mgroenhoff), [Cameron Yan](https://github.com/khell), and [Lyanbin](https://github.com/Lyanbin).[m[41m[m
+frontend/node_modules/@types/babel__template/README.md:1: trailing whitespace.
+[32m+[m[32m# Installation[m[41m[m
+frontend/node_modules/@types/babel__template/README.md:2: trailing whitespace.
+[32m+[m[32m> `npm install --save @types/babel__template`[m[41m[m
+frontend/node_modules/@types/babel__template/README.md:3: trailing whitespace.
+[32m+[m[41m[m
+frontend/node_modules/@types/babel__template/README.md:4: trailing whitespace.
+[32m+[m[32m# Summary[m[41m[m
+frontend/node_modules/@types/babel__template/README.md:5: trailing whitespace.
+[32m+[m[32mThis package contains type definitions for @babel/template (https://github.com/babel/babel/tree/master/packages/babel-template).[m[41m[m
+frontend/node_modules/@types/babel__template/README.md:6: trailing whitespace.
+[32m+[m[41m[m
+frontend/node_modules/@types/babel__template/README.md:7: trailing whitespace.
+[32m+[m[32m# Details[m[41m[m
+frontend/node_modules/@types/babel__template/README.md:8: trailing whitespace.
+[32m+[m[32mFiles were exported from https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/babel__template.[m[41m[m
+frontend/node_modules/@types/babel__template/README.md:9: trailing whitespace.
+[32m+[m[41m[m
+frontend/node_modules/@types/babel__template/README.md:10: trailing whitespace.
+[32m+[m[32m### Additional Details[m[41m[m
+frontend/node_modules/@types/babel__template/README.md:11: trailing whitespace.
+[32m+[m[32m * Last updated: Mon, 06 Nov 2023 22:41:04 GMT[m[41m[m
+frontend/node_modules/@types/babel__template/README.md:12: trailing whitespace.
+[32m+[m[32m * Dependencies: [@babel/parser](https://npmjs.com/package/@babel/parser), [@babel/types](https://npmjs.com/package/@babel/types)[m[41m[m
+frontend/node_modules/@types/babel__template/README.md:13: trailing whitespace.
+[32m+[m[41m[m
+frontend/node_modules/@types/babel__template/README.md:14: trailing whitespace.
+[32m+[m[32m# Credits[m[41m[m
+frontend/node_modules/@types/babel__template/README.md:15: trailing whitespace.
+[32m+[m[32mThese definitions were written by [Troy Gerwien](https://github.com/yortus), [Marvin Hagemeister](https://github.com/marvinhagemeister), [Melvin Groenhoff](https://github.com/mgroenhoff), and [ExE Boss](https://github.com/ExE-Boss).[m[41m[m
+frontend/node_modules/@types/babel__traverse/README.md:1: trailing whitespace.
+[32m+[m[32m# Installation[m[41m[m
+frontend/node_modules/@types/babel__traverse/README.md:2: trailing whitespace.
+[32m+[m[32m> `npm install --save @types/babel__traverse`[m[41m[m
+frontend/node_modules/@types/babel__traverse/README.md:3: trailing whitespace.
+[32m+[m[41m[m
+frontend/node_modules/@types/babel__traverse/README.md:4: trailing whitespace.
+[32m+[m[32m# Summary[m[41m[m
+frontend/node_modules/@types/babel__traverse/README.md:5: trailing whitespace.
+[32m+[m[32mThis package contains type definitions for @babel/traverse (https://github.com/babel/babel/tree/main/packages/babel-traverse).[m[41m[m
+frontend/node_modules/@types/babel__traverse/README.md:6: trailing whitespace.
+[32m+[m[41m[m
+frontend/node_modules/@types/babel__traverse/README.md:7: trailing whitespace.
+[32m+[m[32m# Details[m[41m[m
+frontend/node_modules/@types/babel__traverse/README.md:8: trailing whitespace.
+[32m+[m[32mFiles were exported from https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/babel__traverse.[m[41m[m
+frontend/node_modules/@types/babel__traverse/README.md:9: trailing whitespace.
+[32m+[m[41m[m
+frontend/node_modules/@types/babel__traverse/README.md:10: trailing whitespace.
+[32m+[m[32m### Additional Details[m[41m[m
+frontend/node_modules/@types/babel__traverse/README.md:11: trailing whitespace.
+[32m+[m[32m * Last updated: Thu, 31 Jul 2025 21:02:30 GMT[m[41m[m
+frontend/node_modules/@types/babel__traverse/README.md:12: trailing whitespace.
+[32m+[m[32m * Dependencies: [@babel/types](https://npmjs.com/package/@babel/types)[m[41m[m
+frontend/node_modules/@types/babel__traverse/README.md:13: trailing whitespace.
+[32m+[m[41m[m
+frontend/node_modules/@types/babel__traverse/README.md:14: trailing whitespace.
+[32m+[m[32m# Credits[m[41m[m
+frontend/node_modules/@types/babel__traverse/README.md:15: trailing whitespace.
+[32m+[m[32mThese definitions were written by [Troy Gerwien](https://github.com/yortus), [Marvin Hagemeister](https://github.com/marvinhagemeister), [Ryan Petrich](https://github.com/rpetrich), [Melvin Groenhoff](https://github.com/mgroenhoff), [Dean L.](https://github.com/dlgrit), [Ifiok Jr.](https://github.com/ifiokjr), [ExE Boss](https://github.com/ExE-Boss), and [Daniel Tschinder](https://github.com/danez).[m[41m[m
+frontend/node_modules/@types/estree/README.md:1: trailing whitespace.
+[32m+[m[32m# Installation[m[41m[m
+frontend/node_modules/@types/estree/README.md:2: trailing whitespace.
+[32m+[m[32m> `npm install --save @types/estree`[m[41m[m
+frontend/node_modules/@types/estree/README.md:3: trailing whitespace.
+[32m+[m[41m[m
+frontend/node_modules/@types/estree/README.md:4: trailing whitespace.
+[32m+[m[32m# Summary[m[41m[m
+frontend/node_modules/@types/estree/README.md:5: trailing whitespace.
+[32m+[m[32mThis package contains type definitions for estree (https://github.com/estree/estree).[m[41m[m
+frontend/node_modules/@types/estree/README.md:6: trailing whitespace.
+[32m+[m[41m[m
+frontend/node_modules/@types/estree/README.md:7: trailing whitespace.
+[32m+[m[32m# Details[m[41m[m
+frontend/node_modules/@types/estree/README.md:8: trailing whitespace.
+[32m+[m[32mFiles were exported from https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/estree.[m[41m[m
+frontend/node_modules/@types/estree/README.md:9: trailing whitespace.
+[32m+[m[41m[m
+frontend/node_modules/@types/estree/README.md:10: trailing whitespace.
+[32m+[m[32m### Additional Details[m[41m[m
+frontend/node_modules/@types/estree/README.md:11: trailing whitespace.
+[32m+[m[32m * Last updated: Wed, 06 May 2026 21:01:00 GMT[m[41m[m
+frontend/node_modules/@types/estree/README.md:12: trailing whitespace.
+[32m+[m[32m * Dependencies: none[m[41m[m
+frontend/node_modules/@types/estree/README.md:13: trailing whitespace.
+[32m+[m[41m[m
+frontend/node_modules/@types/estree/README.md:14: trailing whitespace.
+[32m+[m[32m# Credits[m[41m[m
+frontend/node_modules/@types/estree/README.md:15: trailing whitespace.
+[32m+[m[32mThese definitions were written by [RReverser](https://github.com/RReverser).[m[41m[m
+frontend/node_modules/@types/react-dom/README.md:1: trailing whitespace.
+[32m+[m[32m# Installation[m[41m[m
+frontend/node_modules/@types/react-dom/README.md:2: trailing whitespace.
+[32m+[m[32m> `npm install --save @types/react-dom`[m[41m[m
+frontend/node_modules/@types/react-dom/README.md:3: trailing whitespace.
+[32m+[m[41m[m
+frontend/node_modules/@types/react-dom/README.md:4: trailing whitespace.
+[32m+[m[32m# Summary[m[41m[m
+frontend/node_modules/@types/react-dom/README.md:5: trailing whitespace.
+[32m+[m[32mThis package contains type definitions for react-dom (https://react.dev/).[m[41m[m
+frontend/node_modules/@types/react-dom/README.md:6: trailing whitespace.
+[32m+[m[41m[m
+frontend/node_modules/@types/react-dom/README.md:7: trailing whitespace.
+[32m+[m[32m# Details[m[41m[m
+frontend/node_modules/@types/react-dom/README.md:8: trailing whitespace.
+[32m+[m[32mFiles were exported from https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/react-dom.[m[41m[m
+frontend/node_modules/@types/react-dom/README.md:9: trailing whitespace.
+[32m+[m[41m[m
+frontend/node_modules/@types/react-dom/README.md:10: trailing whitespace.
+[32m+[m[32m### Additional Details[m[41m[m
+frontend/node_modules/@types/react-dom/README.md:11: trailing whitespace.
+[32m+[m[32m * Last updated: Wed, 09 Sep 2026 18:05:03 GMT[m[41m[m
+frontend/node_modules/@types/react-dom/README.md:12: trailing whitespace.
+[32m+[m[32m * Dependencies: none[m[41m[m
+frontend/node_modules/@types/react-dom/README.md:13: trailing whitespace.
+[32m+[m[32m * Peer dependencies: [@types/react](https://npmjs.com/package/@types/react)[m[41m[m
+frontend/node_modules/@types/react-dom/README.md:14: trailing whitespace.
+[32m+[m[41m[m
+frontend/node_modules/@types/react-dom/README.md:15: trailing whitespace.
+[32m+[m[32m# Credits[m[41m[m
+frontend/node_modules/@types/react-dom/README.md:16: trailing whitespace.
+[32m+[m[32mThese definitions were written by [Asana](https://asana.com), [AssureSign](http://www.assuresign.com), [Microsoft](https://microsoft.com), [MartynasZilinskas](https://github.com/MartynasZilinskas), [Josh Rutherford](https://github.com/theruther4d), [Jessica Franco](https://github.com/Jessidhia), and [Sebastian Silbermann](https://github.com/eps1lon).[m[41m[m
+frontend/node_modules/@types/react/README.md:1: trailing whitespace.
+[32m+[m[32m# Installation[m[41m[m
+frontend/node_modules/@types/react/README.md:2: trailing whitespace.
+[32m+[m[32m> `npm install --save @types/react`[m[41m[m
+frontend/node_modules/@types/react/README.md:3: trailing whitespace.
+[32m+[m[41m[m
+frontend/node_modules/@types/react/README.md:4: trailing whitespace.
+[32m+[m[32m# Summary[m[41m[m
+frontend/node_modules/@types/react/README.md:5: trailing whitespace.
+[32m+[m[32mThis package contains type definitions for react (https://react.dev/).[m[41m[m
+frontend/node_modules/@types/react/README.md:6: trailing whitespace.
+[32m+[m[41m[m
+frontend/node_modules/@types/react/README.md:7: trailing whitespace.
+[32m+[m[32m# Details[m[41m[m
+frontend/node_modules/@types/react/README.md:8: trailing whitespace.
+[32m+[m[32mFiles were exported from https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/react.[m[41m[m
+frontend/node_modules/@types/react/README.md:9: trailing whitespace.
+[32m+[m[41m[m
+frontend/node_modules/@types/react/README.md:10: trailing whitespace.
+[32m+[m[32m### Additional Details[m[41m[m
+frontend/node_modules/@types/react/README.md:11: trailing whitespace.
+[32m+[m[32m * Last updated: Wed, 09 Sep 2026 18:05:03 GMT[m[41m[m
+frontend/node_modules/@types/react/README.md:12: trailing whitespace.
+[32m+[m[32m * Dependencies: [csstype](https://npmjs.com/package/csstype)[m[41m[m
+frontend/node_modules/@types/react/README.md:13: trailing whitespace.
+[32m+[m[41m[m
+frontend/node_modules/@types/react/README.md:14: trailing whitespace.
+[32m+[m[32m# Credits[m[41m[m
+frontend/node_modules/@types/react/README.md:15: trailing whitespace.
+[32m+[m[32mThese definitions were written by [Asana](https://asana.com), [AssureSign](http://www.assuresign.com), [Microsoft](https://microsoft.com), [John Reilly](https://github.com/johnnyreilly), [Benoit Benezech](https://github.com/bbenezech), [Patricio Zavolinsky](https://github.com/pzavolinsky), [Eric Anderson](https://github.com/ericanderson), [Dovydas Navickas](https://github.com/DovydasNavickas), [Josh Rutherford](https://github.com/theruther4d), [Guilherme Hübner](https://github.com/guilhermehubner), [Ferdy Budhidharma](https://github.com/ferdaber), [Johann Rakotoharisoa](https://github.com/jrakotoharisoa), [Olivier Pascal](https://github.com/pascaloliv), [Martin Hochel](https://github.com/hotell), [Frank Li](https://github.com/franklixuefei), [Jessica Franco](https://github.com/Jessidhia), [Saransh Kataria](https://github.com/saranshkataria), [Kanitkorn Sujautra](https

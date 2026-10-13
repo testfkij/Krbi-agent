@@ -398,6 +398,8 @@ class KRBIApp(App):
             else:
                 self.focus_task = objective
                 self.notify("FOCUS ACTIVE — task stays active until completion. Use /unfocus to exit.", timeout=8)
+                if self.provider and self.model:
+                    self.run_worker(self._send_text("Complete this task end-to-end: " + objective), name="focused-task", exclusive=True)
             self._status()
         elif action == "unfocus":
             self.focus_task = None

@@ -130,7 +130,7 @@ def _chat_post(self):
             elif event.type == "error":
                 payload = {"type": "error", "message": event.message}
             if payload is not None:
-                self.wfile.write(("data: " + json.dumps(payload, ensure_ascii=False) + "\\n\\n").encode("utf-8"))
+                self.wfile.write(("data: " + json.dumps(payload, ensure_ascii=False) + "\n\n").encode("utf-8"))
                 self.wfile.flush()
     try:
         asyncio.run(run_agent())

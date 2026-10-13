@@ -145,10 +145,18 @@ export default function App() {
         buffer = rows.pop() || "";
         for (const row of rows) {
           if (!row.startsWith("data: ")) continue;
-          const value = row.slice(6);
-          if (value.startsWith("Tool running: ") || value.startsWith("Tool completed: ")) setToolStatus(value);
-          else if (value.startsWith("[error] ")) pending += "\n" + value;
-          else pending += value + "\n";
+          const raw = row.slice(6);
+          try {
+            const event = JSON.parse(raw) as { type?: string; text?: string; name?: string; message?: string };
+            if (event.type === "delta") pending += event.text || "";
+            else if (event.type === "tool_start") setToolStatus("⚙ Tool running: " + (event.name || "tool"));
+            else if (event.type === "tool_result") setToolStatus("✓ Tool completed: " + (event.name || "tool"));
+            else if (event.type === "error") pending += "\n[error] " + (event.message || "request failed");
+          } catch {
+            // Continue to support legacy newline-delimited text events from older KRBI servers.
+            if (raw.startsWith("Tool running: ") || raw.startsWith("Tool completed: ")) setToolStatus(raw);
+            else pending += raw + "\n";
+          }
         }
         if (!frame && pending) frame = requestAnimationFrame(flush);
       }
@@ -177,8 +185,10 @@ export default function App() {
     if (name === "/focus") {
       if (!arg) { addLine("system", "Usage: /focus <task to finish>"); return; }
       setFocusTask(arg);
-      await postForm("/session", { focus_task: arg });
+      const saved = await postForm("/session", { focus_task: arg });
+      if (!saved.ok) { setFocusTask(""); addLine("system", await saved.text()); return; }
       addLine("system", "FOCUS ACTIVE\nObjective: " + arg + "\nThe task stays in context until /unfocus.");
+      await chat("Complete this task end-to-end: " + arg);
       return;
     }
     if (name === "/unfocus") {
